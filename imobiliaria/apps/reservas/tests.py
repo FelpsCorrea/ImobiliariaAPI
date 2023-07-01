@@ -115,8 +115,6 @@ class ReservaApiTest(TestCase):
         self.assertEqual(str(reserva.data_checkin), data['data_checkin'])
         self.assertEqual(str(reserva.data_checkout), data['data_checkout'])
         
-        print("PASSOU DO TESTE")
-        
         #------------------------------------------------------------------------------------------------------
         # Parâmetros fictícios que devem falhar (Por já existir uma reserva para essa data)
         data_fail1 = {
