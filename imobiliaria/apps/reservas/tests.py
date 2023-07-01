@@ -6,10 +6,17 @@ from django.utils import timezone
 from .models import Reserva
 from apps.anuncios.models import Anuncio, PlataformaAnuncio
 from apps.imoveis.models import Imovel
+from django.contrib.auth.models import User
+from rest_framework_simplejwt.tokens import AccessToken
 
 class ReservaApiTest(TestCase):
     def setUp(self):
         self.client = APIClient()
+        
+        # Configuração do JWT
+        self.user = User.objects.create_user(username='user_teste', password='teste@123')
+        self.access_token = AccessToken.for_user(self.user)
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + str(self.access_token))
         
         # Cria um imóvel fictício
         self.imovel = Imovel.objects.create(

@@ -3,10 +3,19 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
 from .models import Imovel
+from apps.anuncios.models import Anuncio, PlataformaAnuncio
+from apps.reservas.models import Reserva
+from django.contrib.auth.models import User
+from rest_framework_simplejwt.tokens import AccessToken
 
 class ImovelApiTest(TestCase):
     def setUp(self):
         self.client = APIClient()
+        
+        # Configuração do JWT
+        self.user = User.objects.create_user(username='user_teste', password='teste@123')
+        self.access_token = AccessToken.for_user(self.user)
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + str(self.access_token))
         
         # Cria 2 imoveis fictícios
         self.imovel1 = Imovel.objects.create(
@@ -111,11 +120,32 @@ class ImovelApiTest(TestCase):
         Teste que verifica se está funcionando o delete de um imóvel
     '''
     def test_delete_imovel(self):
+          
+        # Cria uma plataforma
+        plataforma_anuncio = PlataformaAnuncio.objects.create(
+            taxa=50,
+            nome="Airbnb"
+        )
         
         imovel = Imovel.objects.create(
             limite_hospedes=3,
             aceita_animais=False,
             valor_limpeza=150
+        )
+        
+        # Cria um anúncio vinculado ao imovel2
+        anuncio = Anuncio.objects.create(
+            imovel=imovel,
+            plataforma=plataforma_anuncio
+        )
+        
+        # Cria uma reserva vinculada ao anuncio
+        reserva = Reserva.objects.create(
+            anuncio=anuncio,
+            comentario="Reserva Teste",
+            valor_total=100,
+            data_checkin="2023-07-01",
+            data_checkout="2023-07-10"
         )
         
         # Faz uma requisição DELETE para o endpoint
@@ -127,6 +157,14 @@ class ImovelApiTest(TestCase):
         
         # Recarrega o imovel com os dados atualizados do banco
         imovel.refresh_from_db()
+        
+        # Recarrega o anuncio vinculado ao imovel
+        anuncio.refresh_from_db()
+        
+        # Recarrega a reserva vinculada ao anuncio
+        reserva.refresh_from_db()
+        
+        # É esperado que ao deletar um imovel, delete todos anúncios e ao deletar cada um desses anúncios, deletar todas reservas dele.
         
         # Verifica se o imovel sofreu um "Soft Delete"
         self.assertEqual(imovel.ativo, False)
