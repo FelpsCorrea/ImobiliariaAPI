@@ -1,11 +1,19 @@
 from rest_framework import viewsets
 from .models import Anuncio
 from .serializers import *
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 '''
     CRUD de anúncio, sem incluir DELETE
 '''
 class AnuncioViewSet(viewsets.ModelViewSet):
+    
+    # Definindo a classe de autenticação
+    authentication_classes = [JWTAuthentication]
+
+    # Somente usuários autenticados podem acessar os métodos da AnuncioViewSet
+    permission_classes = [IsAuthenticated]
     
     # Definição dos métodos disponíveis
     http_method_names = ['get', 'post', 'patch']
@@ -28,6 +36,12 @@ class AnuncioViewSet(viewsets.ModelViewSet):
     GET das plataformas
 '''
 class PlataformaAnuncioViewSet(viewsets.ModelViewSet):
+    
+    # Definindo a classe de autenticação
+    authentication_classes = [JWTAuthentication]
+
+    # Somente usuários autenticados podem acessar os métodos da PlataformaAnuncioViewSet
+    permission_classes = [IsAuthenticated]
     
     http_method_names = ['get']
     

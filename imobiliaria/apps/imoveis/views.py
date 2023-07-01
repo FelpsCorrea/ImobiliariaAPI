@@ -1,8 +1,19 @@
 from rest_framework import viewsets
 from .models import Imovel
 from .serializers import *
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.permissions import IsAuthenticated
 
+'''
+    CRUD de Imóvel
+'''
 class ImovelViewSet(viewsets.ModelViewSet):
+    
+    # Definindo a classe de autenticação
+    authentication_classes = [JWTAuthentication]
+
+    # Somente usuários autenticados podem acessar os métodos da ImovelViewSet
+    permission_classes = [IsAuthenticated]
     
     # Definição dos métodos disponíveis    
     http_method_names = ['get', 'post', 'patch', 'delete']
