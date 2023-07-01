@@ -10,6 +10,7 @@ python = "^3.11"
 django = "^4.2.2"
 python-dotenv = "^1.0.0"
 djangorestframework = "^3.14.0"
+mysqlclient = "^2.2.0"
 
 
 [build-system]
