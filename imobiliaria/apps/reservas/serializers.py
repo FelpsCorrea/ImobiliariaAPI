@@ -16,7 +16,7 @@ class ReservaCreateSerializer(serializers.ModelSerializer):
         queryset=Anuncio.objects.filter(ativo=True), # Para validar que seja um id existente
         error_messages={
             'required': 'Por favor, forneça o ID do anúncio que a reserva é vinculada.',
-            'does_not_exist': 'O anúncio especificado não existe'
+            'does_not_exist': 'O anúncio especificado não existe.'
         },
         write_only=True,
         source='anuncio'  # Indica que este campo é usado como a fonte para o campo 'anuncio' do modelo
