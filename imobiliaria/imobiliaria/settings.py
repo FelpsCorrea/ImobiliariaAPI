@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 from dotenv import load_dotenv
 import os
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -41,11 +42,27 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     
+    # JWT
+    'rest_framework_simplejwt',
+    
     # Apps
     'apps.anuncios',
     'apps.imoveis',
     'apps.reservas'
 ]
+
+# Aumentando o tempo de duração do token
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=12),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
+}
+
+# Configuração para utilizar o JWT
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
