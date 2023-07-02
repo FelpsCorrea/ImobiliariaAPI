@@ -18,8 +18,14 @@ class ReservaApiTest(TestCase):
         self.access_token = AccessToken.for_user(self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + str(self.access_token))
         
-        # Cria um imóvel fictício
+        # Cria imóveis fictícios
         self.imovel = Imovel.objects.create(
+            limite_hospedes=2,
+            aceita_animais=True,
+            valor_limpeza=100,
+            data_ativacao=timezone.now().date()
+        )
+        self.imovel2 = Imovel.objects.create(
             limite_hospedes=2,
             aceita_animais=True,
             valor_limpeza=100,
@@ -32,13 +38,19 @@ class ReservaApiTest(TestCase):
             nome="Airbnb"
         )
         
-        # Cria um anúncio vinculado ao imovel2
+        # Cria um anúncio vinculado ao imovel
         self.anuncio = Anuncio.objects.create(
             imovel=self.imovel,
             plataforma=plataforma_anuncio
         )
         
-        # Cria duas reservas fictícias vinculadas ao anúncio
+        # Cria um anúncio vinculado ao imovel2
+        self.anuncio2 = Anuncio.objects.create(
+            imovel=self.imovel2,
+            plataforma=plataforma_anuncio
+        )
+        
+        # Cria duas reservas fictícias vinculadas ao anúncio1 - imovel1
         self.reserva1 = Reserva.objects.create(
             anuncio=self.anuncio,
             comentario="Reserva Teste1",
@@ -48,6 +60,15 @@ class ReservaApiTest(TestCase):
         )
         self.reserva2 = Reserva.objects.create(
             anuncio=self.anuncio,
+            comentario="Reserva Teste2",
+            valor_total=200,
+            data_checkin="2023-07-03",
+            data_checkout="2023-07-04"
+        )
+        
+        # Cria uma reserva vinculada ao anuncio2-reserva2
+        self.reserva3 = Reserva.objects.create(
+            anuncio=self.anuncio2,
             comentario="Reserva Teste2",
             valor_total=200,
             data_checkin="2023-07-03",
@@ -82,11 +103,11 @@ class ReservaApiTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         
         # Testa se duas reservas são retornadas
-        self.assertEqual(len(response.data), 2)
+        self.assertEqual(len(response.data), 3)
 
         # Verifica se os ids das reservas na resposta correspondem as reservas criadas
         response_ids = [reserva['id'] for reserva in response.data]
-        self.assertListEqual(response_ids, [self.reserva1.id, self.reserva2.id])
+        self.assertListEqual(response_ids, [self.reserva1.id, self.reserva2.id, self.reserva3.id])
         
     '''
         Teste que verifica se está funcionando a criação de reservas
@@ -112,7 +133,7 @@ class ReservaApiTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         
         # Verifica se uma reserva foi de fato criada
-        self.assertEqual(Reserva.objects.count(), 3)
+        self.assertEqual(Reserva.objects.count(), 4)
         
         # Verifica se a reserva criada tem os detalhes corretos
         reserva = Reserva.objects.latest('id')
@@ -257,3 +278,35 @@ class ReservaApiTest(TestCase):
         
         # Verifica se a reserva2 sofreu um "Soft Delete"
         self.assertEqual(self.reserva2.ativo, False)
+        
+    '''
+        Teste que verifica se está funcionando a busca das reservas de um imóvel
+    '''
+    def test_get_list_by_imovel(self):
+
+        # Faz uma requisição GET para o endpoint
+        url = reverse('reserva-reserva_byimovel', kwargs={'id_imovel': self.imovel2.id})
+        response = self.client.get(url)
+
+        # Testa se a resposta tem status code 200 (OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Verifica se o id da reserva na resposta corresponde a reserva do imóvel 2
+        response_ids = [reserva['id'] for reserva in response.data]
+        self.assertListEqual(response_ids, [self.reserva3.id])
+        
+    '''
+        Teste que verifica se está funcionando a busca das reservas de um anúncio
+    '''
+    def test_get_list_by_anuncio(self):
+
+        # Faz uma requisição GET para o endpoint
+        url = reverse('reserva-reserva_byanuncio', kwargs={'id_anuncio': self.anuncio2.id})
+        response = self.client.get(url)
+
+        # Testa se a resposta tem status code 200 (OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Verifica se o id da reserva na resposta corresponde a reserva do anuncio 2
+        response_ids = [reserva['id'] for reserva in response.data]
+        self.assertListEqual(response_ids, [self.reserva3.id])

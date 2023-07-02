@@ -2,7 +2,6 @@ from rest_framework import serializers
 from .models import Anuncio, PlataformaAnuncio
 from apps.imoveis.serializers import ImovelSerializer
 from apps.imoveis.models import Imovel
-from django.utils import timezone
 
 '''
     Serializer para as plataformas do anúncio
@@ -77,4 +76,15 @@ class AnuncioSerializer(serializers.ModelSerializer):
         fields = '__all__' # Retorna todos dados da tabela
         read_only_fields = ('id', 'data_criacao', 'data_hora_atualizacao', 'imovel') # Define que esses campos não serão incluídos na criação
         
-    
+'''
+    By Imovel Serializer (validar parâmetros)
+'''
+class ImovelIdSerializer(serializers.Serializer):
+    id = serializers.PrimaryKeyRelatedField(
+        required=True, 
+        queryset=Imovel.objects.filter(ativo=True), # Para validar que seja um id existente
+        error_messages={
+            'required': 'Por favor, forneça o ID do imóvel que deseja listar os anuncios.',
+            'does_not_exist': 'O imóvel especificado não existe'
+        }
+    )

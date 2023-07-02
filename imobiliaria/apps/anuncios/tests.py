@@ -18,8 +18,14 @@ class AnuncioApiTest(TestCase):
         self.access_token = AccessToken.for_user(self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + str(self.access_token))
         
-        # Cria 1 imóvel fictício
+        # Cria 2 imóveis fictícios
         self.imovel = Imovel.objects.create(
+            limite_hospedes=2,
+            aceita_animais=True,
+            valor_limpeza=100,
+            data_ativacao=timezone.now().date()
+        )
+        self.imovel2 = Imovel.objects.create(
             limite_hospedes=2,
             aceita_animais=True,
             valor_limpeza=100,
@@ -44,6 +50,10 @@ class AnuncioApiTest(TestCase):
         )
         self.anuncio2 = Anuncio.objects.create(
             imovel=self.imovel,
+            plataforma=self.plataforma_anuncio1
+        )
+        self.anuncio3 = Anuncio.objects.create(
+            imovel=self.imovel2,
             plataforma=self.plataforma_anuncio1
         )
 
@@ -75,11 +85,11 @@ class AnuncioApiTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         
         # Testa se dois anúncios são retornados
-        self.assertEqual(len(response.data), 2) 
+        self.assertEqual(len(response.data), 3) 
 
         # Verifica se os ids dos anúncios na resposta correspondem aos anúncios criados
         response_ids = [anuncio['id'] for anuncio in response.data]
-        self.assertListEqual(response_ids, [self.anuncio1.id, self.anuncio2.id])
+        self.assertListEqual(response_ids, [self.anuncio1.id, self.anuncio2.id, self.anuncio3.id])
         
     '''
         Teste que verifica se está funcionando a criação de um anúncio
@@ -100,7 +110,7 @@ class AnuncioApiTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         
         # Verifica se um anúncio foi de fato criado
-        self.assertEqual(Anuncio.objects.count(), 3)
+        self.assertEqual(Anuncio.objects.count(), 4)
         
         # Verifica se o anúncio criado tem os detalhes corretos
         anuncio = Anuncio.objects.latest('id')
@@ -141,3 +151,19 @@ class AnuncioApiTest(TestCase):
         
         # Verifica se a resposta tem status code 405 (Not Allowed)
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        
+    '''
+        Teste que verifica se está funcionando a busca dos anúncios de um imóvel
+    '''
+    def test_get_list_by_imovel(self):
+
+        # Faz uma requisição GET para o endpoint
+        url = reverse('anuncio-anuncio_byimovel', kwargs={'id_imovel': self.imovel.id})
+        response = self.client.get(url)
+
+        # Testa se a resposta tem status code 200 (OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Verifica se os ids dos anúncios na resposta correspondem aos anúncios do imóvel 1
+        response_ids = [anuncio['id'] for anuncio in response.data]
+        self.assertListEqual(response_ids, [self.anuncio1.id, self.anuncio2.id])

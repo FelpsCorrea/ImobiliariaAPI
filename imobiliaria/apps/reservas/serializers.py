@@ -4,6 +4,7 @@ from apps.anuncios.serializers import AnuncioSerializer
 from apps.anuncios.models import Anuncio
 from django.utils import timezone
 from django.db.models import Q
+from apps.imoveis.models import Imovel
 
 '''
     Serializer responsável por validar os parâmetreos para o CREATE
@@ -92,3 +93,29 @@ class ReservaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reserva
         fields = '__all__' # Retorna todos dados da tabela
+        
+'''
+    By Imovel Serializer (validar parâmetros)
+'''
+class ImovelIdSerializer(serializers.Serializer):
+    id = serializers.PrimaryKeyRelatedField(
+        required=True, 
+        queryset=Imovel.objects.filter(ativo=True), # Para validar que seja um id existente
+        error_messages={
+            'required': 'Por favor, forneça o ID do imóvel que deseja listar as reservas.',
+            'does_not_exist': 'O imóvel especificado não existe'
+        }
+    )
+    
+'''
+    By Anuncio Serializer (validar parâmetros)
+'''
+class AnuncioIdSerializer(serializers.Serializer):
+    id = serializers.PrimaryKeyRelatedField(
+        required=True, 
+        queryset=Anuncio.objects.filter(ativo=True), # Para validar que seja um id existente
+        error_messages={
+            'required': 'Por favor, forneça o ID do anúncio que deseja listar as reservas.',
+            'does_not_exist': 'O anúncio especificado não existe'
+        }
+    )
