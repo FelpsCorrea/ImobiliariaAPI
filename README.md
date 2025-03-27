@@ -1,181 +1,198 @@
 # ImobiliariaAPI
-Repositório para a API relacionada a um CRUD de reservas de Imóveis.
----
-Nesse repositório utiliza-se um padrão arquitetural MVT, onde a camada de Template é substituída pelo processo de serialização e formatação dos dados adequados para a API.
 
-Para o desenvolvimento também foi utilizado a metodologia [TDD](https://www.devmedia.com.br/test-driven-development-tdd-simples-e-pratico/18533) (Test-Driven Development), onde os testes foram desenvolvidos anteriores às Views ou camadas de serialização, para assim, ter uma melhor modelagem do funcionamento antes de "sair codando", dessa forma, tendo uma melhor qualidade de código e diminuindo as chances de bugs.
-
-Para segurança da API, foi implementado a autenticação com token [JWT](https://www.devmedia.com.br/como-o-jwt-funciona/40265).
-
-Por fim, utilizando a biblioteca [`drf-yasg`](https://drf-yasg.readthedocs.io/en/stable/), foi implementada uma documentação automática, que disponibiliza 2 interfaces, sendo elas `swagger` e `redoc`.
+Repository for the API related to a Property Reservation CRUD system.
 
 ---
 
-# Execução do ambiente
+This project follows an MVT architectural pattern, where the **Template** layer is replaced by the **serialization and data formatting** process suitable for an API.
 
-## Para usuários Windows
-Usuários de Windows é recomendado utilizar um subsistema Ubuntu, para isso pode-se utilizar o `wsl`.
+The project was developed using the [TDD](https://www.devmedia.com.br/test-driven-development-tdd-simples-e-pratico/18533) (Test-Driven Development) methodology, where tests were written **before** implementing the views or serializers. This approach promotes better application design, higher code quality, and reduces the likelihood of bugs.
 
-Para isso siga os passos abaixo:
+For API security, **JWT token authentication** was implemented using [JWT](https://www.devmedia.com.br/como-o-jwt-funciona/40265).
 
-1.  Primeiro abra o PowerShell como ADM.
-
-2.  Execute o comando para instalar a distro do Ubuntu:
-    
-```sh
-    wsl --install -d Ubuntu
-```
-3. Configure o username e password.
-4. No próprio powershelll verifique se a versão  da distro que o Ubuntu está utilizando do WSL é a 2 executando o comando abaixo:
-
-```sh
-    wsl -l -v
-```
-- Caso não seja, atualize o WSL para a versão 2 com o comando abaixo:
-```sh
-    wsl --set-version Ubuntu 2
-```
-
-- Caso ao abrir o Ubuntu dê erro por falta de suporte, execute o comando abaixo no PowerShell como ADM e reinicie o computador.
-```sh
-    Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux
-```
-
-- Ao utilizar o VS Code é importante ter a extensão WSL instalada.
+Finally, using the [`drf-yasg`](https://drf-yasg.readthedocs.io/en/stable/) library, automatic documentation was generated, providing two interface options: **Swagger** and **Redoc**.
 
 ---
-## Com o Ubuntu já aberto
 
-Caso não tenha o Python configurado, pode utilizar o Pyenv para gerenciar as versões do python da sua distro, podendo alternar entre elas conforme necessidade.
+## Environment Setup
 
-Para isso disponibilizei um [tutorial](https://like-loan-f5c.notion.site/Pyenv-082c9fdb3b82463f9535d54f5d2253bc?pvs=4) para a configuração.
+### For Windows Users
 
-- Garanta que está utilizando a versão mais atualizada do Python.
+It is recommended to use the Ubuntu subsystem through **WSL** (Windows Subsystem for Linux).
 
-- Caso ainda não tenha, [instale](https://like-loan-f5c.notion.site/Poetry-12df841db7ec48b8a75a1ddce7af4ea9?pvs=4) o `Poetry` para criar um ambiente virtual e gerenciar as dependências do projeto.
+Steps:
 
-- Caso ainda não tenha iniciado ou instalado, [inicie](https://like-loan-f5c.notion.site/MySQL-Server-dfcd6c53a5dc4218a8e6ba7633aa2f9c?pvs=4) o MySQL Server.
----
+1. Open **PowerShell as Administrator**.
 
-## Criando o schema para utilizar
-1. Entre no ambiente mysql
+2. Install Ubuntu:
 ```sh
-    sudo mysql
+wsl --install -d Ubuntu
 ```
 
-2. Crie o `schema` que irá utilizar
+3. Set your username and password.
+
+4. Check if the Ubuntu distribution is using **WSL version 2**:
+```sh
+wsl -l -v
+```
+
+- If not, update it:
+```sh
+wsl --set-version Ubuntu 2
+```
+
+- If you encounter an error when opening Ubuntu, enable the feature and restart:
+```sh
+Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux
+```
+
+- Ensure the **WSL extension** is installed in VS Code.
+
+---
+
+### Inside Ubuntu
+
+If Python is not yet configured, you can manage versions using **Pyenv**. A tutorial is available [here](https://like-loan-f5c.notion.site/Pyenv-082c9fdb3b82463f9535d54f5d2253bc?pvs=4).
+
+- Ensure you're using the latest Python version.
+
+- If not already installed, install [Poetry](https://like-loan-f5c.notion.site/Poetry-12df841db7ec48b8a75a1ddce7af4ea9?pvs=4) to create a virtual environment and manage dependencies.
+
+- Make sure **MySQL Server** is installed and running. You can follow this [guide](https://like-loan-f5c.notion.site/MySQL-Server-dfcd6c53a5dc4218a8e6ba7633aa2f9c?pvs=4).
+
+---
+
+## Creating the MySQL Schema
+
+1. Access MySQL:
+```sh
+sudo mysql
+```
+
+2. Create the schema:
 ```sql
-    CREATE SCHEMA imobiliaria;
+CREATE SCHEMA imobiliaria;
 ```
 
-3. Saia do ambiente mysql
+3. Exit MySQL:
 ```sh
-    exit
+exit
+```
+
+---
+
+## Opening the Project
+
+1. Clone the project in your preferred directory. For example, in a `repositorios` folder:
+
+```sh
+mkdir repositorios
+cd repositorios
+git clone <repository-link>
+```
+
+2. Enter the project directory:
+```sh
+cd ImobiliariaAPI
+```
+
+3. Open it with VS Code:
+```sh
+code .
 ```
 
 ---
 
-## Abrindo o projeto
+## Setting up the Virtual Environment
 
-1. Clone o projeto em sua pasta de preferência, pode por exemplo clonar dentro de uma pasta chamada `repositorios`:
-#
-Crie a pasta repositorios
-```sh
-    mkdir repositorios
-```
-Entre na pasta repositorios
-```sh
-    cd repositorios
-```
-Clone o repositório
-```sh
-    git clone <link>
-```
----
-2. Entre na pasta do projeto:
-```sh
-    cd ImobiliariaAPI
-```
-3. Abra o projeto
-```sh
-    code .
-```
----
+1. Open a new terminal in VS Code.
 
-## Iniciando ambiente virtual e instalando as dependências
-1. Abra um novo terminal no VS Code.
-
-
-2. Inicie um novo ambiente virtual com o poetry:
+2. Start a Poetry shell:
 ```sh
-    poetry shell
+poetry shell
 ```
-3. Instale as dependências
+
+3. Install the dependencies:
 ```sh
-    poetry install
+poetry install
 ```
-4. Crie um arquivo `.env` conforme o arquivo `.env.example` e configure as variáveis de ambiente conforme seu MySQL Server, atribuindo a `DB_NAME` o valor 'imobiliaria', conforme o schema que criamos. Também atribua os dados para seu usuário da API. O conteúdo do arquivo deve ficar algo como:
-```sh
-    DB_NAME='imobiliaria'
-    DB_USER='user'
-    DB_PASSWORD='123'
-    DB_HOST='localhost'
-    DB_PORT='3306'
-    SUPERUSER_NAME='meu_usuario'
-    SUPERUSER_PASSWORD='minha_senha'
+
+4. Create a `.env` file based on `.env.example` and configure it with your MySQL settings and admin credentials:
+```env
+DB_NAME='imobiliaria'
+DB_USER='user'
+DB_PASSWORD='123'
+DB_HOST='localhost'
+DB_PORT='3306'
+SUPERUSER_NAME='my_user'
+SUPERUSER_PASSWORD='my_password'
 ```
 
 ---
-## Iniciando a API
-1. Entre na pasta raiz do projeto Django:
-```sh
-    cd imobiliaria
-```
-1. Com as variáveis de ambiente já configuradas, faça a migração dos models para seu schema:
-```sh
-    python manage.py migrate
-```
-2. Carregue o dump dos dados de exemplo disponibilizados:
-```sh
-    python manage.py loaddata fixtures/*
-```
-3. Ligue a API:
-```sh
-    python manage.py runserver
-```
----
-## Obtendo token de autenticação
-1. Abra um novo terminal e entre na pasta raiz do projeto Django:
-```sh
-    cd imobiliaria
-```
-- Garanta ter configurado corretamente as variáveis de ambiente de `SUPERUSER`
-2. Obtenha o token no terminal:
-```sh
-    python obter_token.py
-```
----
 
-## Executando os testes unitários
+## Starting the API
 
-Você pode executar o teste de cada app individualmente através dos seguintes comandos:
+1. Enter the Django root folder:
 ```sh
-    python manage.py test apps.imoveis.tests.ImovelApiTest
-```
-```sh
-    python manage.py test apps.anuncios.tests.AnuncioApiTest
-```
-```sh
-    python manage.py test apps.reservas.tests.ReservaApiTest
+cd imobiliaria
 ```
 
-Se não forem feitas alterações no código, espera-se que todos testes passem :)
+2. Run the migrations:
+```sh
+python manage.py migrate
+```
+
+3. Load the sample data:
+```sh
+python manage.py loaddata fixtures/*
+```
+
+4. Start the server:
+```sh
+python manage.py runserver
+```
 
 ---
-## Fazendo requisições
-Com a API ligada é possível fazer requisições através de programas como [Postman](https://www.postman.com) e [Insomnia](https://insomnia.rest).
 
-A documentação para as requisições fica disponível em duas interfaces, sendo elas [Swagger](http://localhost:8000/swagger/) e [Redoc](http://localhost:8000/redoc/). Utilize a de sua preferência para consultar os endpoints disponíveis :)
+## Getting the JWT Token
+
+1. Open a new terminal and navigate to the Django root folder:
+```sh
+cd imobiliaria
+```
+
+2. Get the authentication token:
+```sh
+python obter_token.py
+```
 
 ---
+
+## Running Unit Tests
+
+You can run each app's tests individually:
+
+```sh
+python manage.py test apps.imoveis.tests.ImovelApiTest
+python manage.py test apps.anuncios.tests.AnuncioApiTest
+python manage.py test apps.reservas.tests.ReservaApiTest
+```
+
+If no code changes were made, all tests should pass ✅
+
+---
+
+## Making Requests
+
+With the API running, you can make requests using tools like [Postman](https://www.postman.com) or [Insomnia](https://insomnia.rest).
+
+Interactive API documentation is available via:
+
+- [Swagger](http://localhost:8000/swagger/)
+- [Redoc](http://localhost:8000/redoc/)
+
+Use your preferred interface to explore the available endpoints.
+
+---
+
 ## Voilà! [:)](https://www.linkedin.com/in/felipecorreals/)
